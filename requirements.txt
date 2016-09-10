@@ -1,0 +1,5 @@
+termcolor==1.1.0
+requests==2.11.1
+lxml==3.6.0
+pycrypto==2.6.1
+PyMySQL==0.7.9
