@@ -31,4 +31,4 @@ def getMatchRow(match, counter):
             )
 
 def getMatchHeader():
-    return ('Counter', 'Server', 'Scored', 'Game score', 'Set', 'Set score', 'State', 'Timestamp')
+    return ("Counter", "Server", "Scored", "Gamescore", "Set", "Setscore", "State", "Timestamp")
