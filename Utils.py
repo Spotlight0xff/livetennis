@@ -8,7 +8,7 @@ class ColorizeFilter(logging.Filter):
         # logging.TRACE: 'white',
         logging.DEBUG: 'white',
         logging.INFO: 'yellow',
-        logging.WARN: 'orange',
+        logging.WARN: 'cyan',
         logging.ERROR: 'red',
     }
 
