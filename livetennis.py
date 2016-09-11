@@ -4,9 +4,10 @@
 import signal
 import sys
 from time import sleep
-import Utils
 import argparse
 import logging
+import configparser
+import os.path
 
 
 import log
@@ -14,20 +15,26 @@ logger = log.setup_custom_logger('root')
 logger.debug('main message')
 
 
+import Utils
 import Fetcher
 import Crypt
 import LiveObserver
 
 
 interval = 10
+db_host = ''
+db_port = ''
+db_user = ''
+db_password = ''
+db_name = ''
 
 
 def main():
-    global interval
+    global interval, csvdir, db_host, db_port, db_user, db_password, db_name
     logger.info('Starting program')
     live_matches = []
     old_live_matches = []
-    observer = LiveObserver.LiveObserver()
+    observer = LiveObserver.LiveObserver(csvdir, db_host, db_port, db_user, db_password, db_name)
     while True:
         old_live_matches = live_matches
         logger.info('Retrieve list of live matches')
@@ -56,20 +63,20 @@ def main():
             observer.update(uniq_match, match)
 
         logger.debug('Wait {} seconds until next run.'.format(interval))
-        # sleep(interval)
+        sleep(interval)
 
 
 def parseArgs():
-    global verbose
+    global interval, csvdir, db_host, db_port, db_user, db_password, db_name
     parser = argparse.ArgumentParser(description = 'Export Live Tennis Data')
     parser.add_argument('-d', '--csvdir', action='store',
-            help='Path to output directory (.csv files)')
+            help='Path to output directory (.csv files)', default='data')
     parser.add_argument('-c', '--config', action='store',
-            help='Path to configuration file')
+            help='Path to configuration file', default='config.ini')
     parser.add_argument("-v", "--verbose", action="count",
             help='Increase output verbosity (up to -vv)')
     parser.add_argument('-i', '--interval', action='store',
-            help='Interval to request live updates')
+            help='Interval to request live updates', default=10)
 
     args = parser.parse_args()
     if args.verbose == 0:
@@ -79,6 +86,24 @@ def parseArgs():
     elif args.verbose == 2:
         logger.setLevel(5) # TRACE
 
+    csvdir = args.csvdir
+    interval = args.interval
+
+    logger.debug('Trying to read configfile \'{}\''.format(args.config))
+    if os.path.isfile(args.config):
+        config = configparser.ConfigParser()
+        config.read(args.config)
+        if 'Database' in config.sections():
+            db_cfg = config['Database']
+            db_host = db_cfg.get('Host', 'localhost')
+            db_port = int(db_cfg.get('Port', '3306'))
+            db_user = db_cfg.get('User', Utils.getDefaultUser())
+            db_password = db_cfg.get('Password', '')
+            db_name = db_cfg.get('Name', 'livetennis')
+        else:
+            logger.error('Specify an section called \'Database\'')
+    else:
+        logger.error('You need to provide an configfile for database connection')
     
 
 if __name__ == '__main__':
