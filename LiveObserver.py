@@ -28,10 +28,10 @@ class LiveObserver:
         """Match one record in the provided arguments
         Roughly tries to find (year, tournament_id, match_id) in matches
         """
-        for t_id, m in matches:
-            if m.get('mId') == uniq_match.match() and t_id == uniq_match.tournament():
-                return (t_id, m)
-        return (0, None)
+        for u_m, m in matches:
+            if u_m == uniq_match:
+                return m
+        return None
 
     def new(self, uniq_match, matches):
         """gets called when a match goes live"""
