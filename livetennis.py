@@ -84,7 +84,7 @@ def parseArgs():
         logger.setLevel(logging.INFO)
     elif args.verbose == 1:
         logger.setLevel(logging.DEBUG)
-    elif args.verbose == 2:
+    else
         logger.setLevel(5) # TRACE
 
     csvdir = args.csvdir
