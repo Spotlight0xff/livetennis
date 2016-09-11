@@ -91,7 +91,7 @@ class LiveObserver:
 
 
 
-    def completed(self, uniq_match, matches):
+    def completed(self, uniq_match, matches, tournaments):
         unique_name = uniq_match.getName()
         logger.info('{} got completed.'.format(unique_name))
         del self.counter[unique_name]

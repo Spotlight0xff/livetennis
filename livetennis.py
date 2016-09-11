@@ -38,7 +38,8 @@ def main():
     while True:
         old_live_matches = live_matches
         logger.info('Retrieve list of live matches')
-        live_matches = list(Fetcher.getAllLiveMatches())
+        tournaments = Fetcher.getTournaments()
+        live_matches = list(Fetcher.getAllLiveMatches(tournaments))
         logger.debug('Found {} live matches'.format(len(live_matches)))
         old_matches_id = [uniq_match for uniq_match, match in old_live_matches]
         matches_id = [uniq_match for uniq_match, match in live_matches]
@@ -49,14 +50,14 @@ def main():
         # completed = set(old_matches_id) - set(matches_id)
         completed = [x for x in old_matches_id if x not in matches_id] #set(matches_id) - set(old_matches_id)
         for uniq_match in completed:
-            observer.completed(uniq_match, old_live_matches) # id
+            observer.completed(uniq_match, old_live_matches, tournaments) # id
 
         # iterate through matches which went live just now
         new_live = [x for x in matches_id if x not in old_matches_id] #set(matches_id) - set(old_matches_id)
         if len(new_live):
             logger.info('{} match{} just went live.'.format(len(new_live), 'es' if len(new_live)>1 else ''))
         for uniq_match in new_live:
-            observer.new(uniq_match, live_matches)
+            observer.new(uniq_match, live_matches, tournaments)
 
         # iterate through all live matches
         for uniq_match, match in live_matches:

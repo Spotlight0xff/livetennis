@@ -99,8 +99,7 @@ def getMatchStats(t_id, m_id):
     model = MatchModel.MatchModel()
     model.fromCsv(match.get('csv'))
 
-def getAllLiveMatches():
-    tournaments = getTournaments()
+def getAllLiveMatches(tournaments):
     # iterate through all tournaments
     for tournament in tournaments:
         # and get the live matches
