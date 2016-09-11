@@ -63,6 +63,19 @@ class DatabaseConnection:
         self.cache_tableexists[table_name] = num_affected_rows == 1
         return self.cache_tableexists[table_name]
 
+    def selectRow(self, table_name, query):
+        q_str = None
+        if isinstance(query, dict):
+            q_str = " AND ".join(["{}='{}'".format(k, v) for k,v in query.items()])
+            print(q_str)
+        else:
+            q_str = query
+        sql = 'SELECT * FROM `{}` WHERE {}'.format(table_name, q_str)
+        print(sql)
+        cursor = self.connection.cursor()
+        return cursor.execute(sql)
+
+
 
     def createTable(self, table_name, names):
         """Create a new table called `table_name` with the provided names as columns.
