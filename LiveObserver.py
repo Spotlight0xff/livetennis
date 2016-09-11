@@ -15,6 +15,7 @@ class LiveObserver:
     This class roughly follows the observer pattern.
     """
     map_writer = {}
+    last_update = {}
     counter = {}
     csvdir = 'data'
 
@@ -97,8 +98,16 @@ class LiveObserver:
         del self.map_writer[unique_name]
 
     def update(self, uniq_match, match):
-        logger.info('Match {} got updated.'.format(match.get('mId')))
         unique_name = uniq_match.getName()
+        row = FeedUpdater.getMatchRow(match,0)
+        if unique_name in self.last_update:
+            if row[:-1] == self.last_update[unique_name][:-1]:
+                logger.debug('Match {} did not change!'.format(unique_name))
+                return
+            else:
+                logger.debug('Match {} did change!'.format(unique_name))
+        self.last_update[unique_name] = row
         funcs = self.map_writer[unique_name]
         for func in funcs:
             func(uniq_match, match)
+        logger.info('Match {} got updated.'.format(match.get('mId')))
