@@ -26,3 +26,14 @@ def showProgress(part, full):
         round(percent * 100), part, full
     ))
     sys.stdout.flush()
+
+def getDefaultUser():
+    user = None
+    try:
+        import getpass
+        user = getpass.getuser()
+        del getpass
+    except (ImportError, KeyError):
+        # either no getpass module or no entry in OS db for user
+        user = ''
+    return user
