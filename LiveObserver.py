@@ -51,11 +51,12 @@ class LiveObserver:
         if not self.db_conn.success:
             return # no db support (failed to connect probably)
 
+        unique_name = uniq_match.getName()
         match = self.crossRefMatch(uniq_match, matches)
         result = self.db_conn.selectRow('matches', {
                                             'year': uniq_match.getYear(),
-                                            'match_id': matchId,
-                                            'tournament_id': tId})
+                                            'match_id': uniq_match.getMatch(),
+                                            'tournament_id': uniq_match.getTournament()})
         if not result: # need to create new record
             logger.info('Create new match record for '+unique_name)
             t_name = ''
@@ -69,8 +70,8 @@ class LiveObserver:
             res_ins = self.db_conn.insertRow('matches', (
                 0,
                 uniq_match.getYear(),
-                tId,
-                matchId,
+                uniq_match.getTournament(),
+                uniq_match.getMatch(),
                 unique_name,
                 t_name, # tournament name
                 t_cat, # tournament category
