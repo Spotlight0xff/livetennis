@@ -99,6 +99,8 @@ class LiveObserver:
     def csv_write(self, uniq_match, match):
         """Write live match details into csv-file"""
         unique_name = uniq_match.getName()
+        if not os.path.exists(self.csvdir):
+            os.makedirs(self.csvdir)
         csv_file = os.path.join(self.csvdir,unique_name+'.csv')
         new = False # need to add header @ top
         if not os.path.isfile(csv_file):
