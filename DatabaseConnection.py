@@ -72,11 +72,10 @@ class DatabaseConnection:
         q_str = None
         if isinstance(query, dict):
             q_str = " AND ".join(["{}='{}'".format(k, v) for k,v in query.items()])
-            print(q_str)
         else:
             q_str = query
         sql = 'SELECT * FROM `{}` WHERE {}'.format(table_name, q_str)
-        print(sql)
+        logger.debug(sql)
         cursor = self.connection.cursor()
         return cursor.execute(sql)
 
