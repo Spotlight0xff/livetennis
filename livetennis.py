@@ -79,12 +79,12 @@ def parseArgs():
     parser.add_argument('-i', '--interval', action='store',
             help='Interval to request live updates', default=10)
 
-    args = parser.parse_args()
-    if args.verbose == 0:
+    args  = parser.parse_args()
+    if not args.verbose:
         logger.setLevel(logging.INFO)
     elif args.verbose == 1:
         logger.setLevel(logging.DEBUG)
-    else
+    else:
         logger.setLevel(5) # TRACE
 
     csvdir = args.csvdir
