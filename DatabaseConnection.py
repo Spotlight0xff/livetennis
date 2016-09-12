@@ -9,13 +9,18 @@ class DatabaseConnection:
     cache_tableexists = {}
     def __init__(self, db_host, db_port, db_user, db_password, db_name):
         logger.debug('Trying to connect to {}@{}:{}/{}'.format(db_user, db_host, db_port, db_name))
-        self.connection = pymysql.connect(host=db_host,
-                                     port=db_port,
-                                     user=db_user,
-                                     password=db_password,
-                                     db=db_name,
-                                     charset='utf8mb4',
-                                     cursorclass=pymysql.cursors.DictCursor)
+        try:
+            self.connection = pymysql.connect(host=db_host,
+                                         port=db_port,
+                                         user=db_user,
+                                         password=db_password,
+                                         db=db_name,
+                                         charset='utf8mb4',
+                                         cursorclass=pymysql.cursors.DictCursor)
+        except pymysql.err.OperationalError as e:
+            logger.error(e)
+            self.suceess = False
+
         if not self.connection:
             logger.error('Failed to connect to database')
             self.success = False

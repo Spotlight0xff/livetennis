@@ -41,9 +41,17 @@ class LiveObserver:
         unique_name = uniq_match.getName()
         logger.debug('Unique name: ' + unique_name)
 
+        self.map_writer[unique_name] = [self.csv_write, self.update_db]
+        self.counter[unique_name] = 0
+        self.createMatchRecord(uniq_match, matches, tournaments)
+
+
+    def createMatchRecord(self, uniq_match, matches, tournaments):
+        """Insert new row into database (match record)"""
+        if not self.db_conn.success:
+            return # no db support (failed to connect probably)
+
         match = self.crossRefMatch(uniq_match, matches)
-
-
         result = self.db_conn.selectRow('matches', {
                                             'year': uniq_match.getYear(),
                                             'match_id': matchId,
@@ -86,8 +94,6 @@ class LiveObserver:
             True
 
 
-        self.map_writer[unique_name] = [self.csv_write, self.update_db]
-        self.counter[unique_name] = 0
 
 
     def csv_write(self, uniq_match, match):
@@ -109,7 +115,6 @@ class LiveObserver:
     def update_db(self, uniq_match, match):
         """Update live match details in database"""
         if not self.db_conn.success:
-            logger.error('fail')
             return # no db support (failed to connect probably)
 
         unique_name = uniq_match.getName()
