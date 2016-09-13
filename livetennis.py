@@ -28,10 +28,11 @@ db_user = ''
 db_password = ''
 db_name = ''
 filter = []
+only_singles = True
 
 
 def main():
-    global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter
+    global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter, only_singles
     logger.info('Starting program')
     live_matches = []
     old_live_matches = []
@@ -41,6 +42,11 @@ def main():
         logger.info('Retrieve list of live matches')
         tournaments = list(Fetcher.getTournaments(filter=filter))
         live_matches = list(Fetcher.getAllLiveMatches(tournaments))
+
+        # Filter based on preference
+        if only_singles:
+            live_matches = [m for m in live_matches if not isDoubles(m)]
+
         logger.debug('Found {} live matches'.format(len(live_matches)))
         old_matches_id = [uniq_match for uniq_match, match in old_live_matches]
         matches_id = [uniq_match for uniq_match, match in live_matches]
@@ -127,7 +133,7 @@ def printLiveMatches(verbose = False):
 
 
 def parseArgs():
-    global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter
+    global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter, only_singles
     parser = argparse.ArgumentParser(description = 'Export Live Tennis Data')
     parser.add_argument('-d', '--csvdir', action='store',
             help='Path to output directory (.csv files)', default='data')
@@ -184,12 +190,11 @@ def parseArgs():
                 filter = whitelist.split(',')
                 logger.info("Whitelisted following tournaments: [{}]".format(",".join(filter)))
 
-            doubles = int(cfg_filter.get('Doubles', '0'))
-            # TODO make this happen
-            if doubles:
-                logger.info('Fetch doubles matches also')
-            else:
+            only_singles = True if int(cfg_filter.get('Doubles', '0'))==0 else False
+            if only_singles:
                 logger.info('Fetch only single matches')
+            else:
+                logger.info('Fetch doubles matches also')
         else:
             logger.warn('No filter specified, fetching all matches from all tournaments.')
 
