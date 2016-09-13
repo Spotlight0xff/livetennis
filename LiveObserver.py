@@ -123,6 +123,18 @@ class LiveObserver:
 
     def completed(self, uniq_match, matches, tournaments):
         unique_name = uniq_match.getName()
+
+        # update match record (final update)
+        match_record = FeedUpdater.getMatchRecord(uniq_match, matches, tournaments, False)
+        select_cond = {
+                        'year': uniq_match.getYear(),
+                        'match_id': uniq_match.getMatch(),
+                        'tournament_id': uniq_match.getTournament()
+                      }
+        result = self.db_conn.updateRow('matches', select_cond, match_record)
+        if not result:
+            logger.error('Error updating final match record for {}'.format(uniq_name))
+
         logger.info('{} got completed.'.format(unique_name))
         del self.counter[unique_name]
         del self.map_writer[unique_name]
