@@ -43,56 +43,33 @@ class LiveObserver:
 
         self.map_writer[unique_name] = [self.csv_write, self.update_db]
         self.counter[unique_name] = 0
-        self.createMatchRecord(uniq_match, matches, tournaments)
+        self.updateMatchRecord(uniq_match, matches, tournaments, True)
 
 
-    def createMatchRecord(self, uniq_match, matches, tournaments):
-        """Insert new row into database (match record)"""
+    def updateMatchRecord(self, uniq_match, matches, tournaments, initial = True):
+        """Insert/Update match record in the db"""
         if not self.db_conn.success:
             return # no db support (failed to connect probably)
 
         unique_name = uniq_match.getName()
         match = self.crossRefMatch(uniq_match, matches)
-        result = self.db_conn.selectRow('matches', {
-                                            'year': uniq_match.getYear(),
-                                            'match_id': uniq_match.getMatch(),
-                                            'tournament_id': uniq_match.getTournament()})
+        select_cond = {
+                        'year': uniq_match.getYear(),
+                        'match_id': uniq_match.getMatch(),
+                        'tournament_id': uniq_match.getTournament()
+                      }
+        result = self.db_conn.selectRow('matches', select_cond)
         if not result: # need to create new record
+            match_record = FeedUpdater.getMatchRecord(uniq_match, match, tournaments, True)
             logger.info('Create new match record for '+unique_name)
-            t_name = ''
-            t_cat = ''
-            for t in tournaments:
-                if t.get('year') == uniq_match.getYear() and t.get('id') == tId:
-                    t_name = t.get('name')
-                    t_cat = t.get('group')
-                    break
-
-            res_ins = self.db_conn.insertRow('matches', (
-                0,
-                uniq_match.getYear(),
-                uniq_match.getTournament(),
-                uniq_match.getMatch(),
-                unique_name,
-                t_name, # tournament name
-                t_cat, # tournament category
-                match.get('state'), # status
-                '0', # is doubles
-                match.get('isQuals'),
-                match.get('numSets'),
-                '{} {}'.format(match.get('nAF'), match.get('nAL')),
-                '{} {}'.format(match.get('nBF'), match.get('nBL')),
-                match.get('rnd'), # round
-                match.get('winner'), # not sure if this is correct...
-                ''.join([match.get(s) for s in ['s{}{}'.format(num,side) for side in ['A','B'] for num in range(1,6)]]),
-                '', # first server
-                match.get('ts'), # start time
-                match.get('mt'), # match time
-                '', # retirement
-                ))
+            res_ins = self.db_conn.insertRow('matches', tuple(match_record.values()))
             if not res_ins:
                 logger.error('Could not create match record for '+unique_name)
         else: # already listed (maybe check if set to live..?)
-            True
+            match_record = FeedUpdater.getMatchRecord(uniq_match, match, tournaments, False)
+            res_update = self.db_conn.updateRow('matches', select_cond, match_record)
+            if not res_update:
+                logger.error('Could not update match record for ' + unique_name)
 
 
 
