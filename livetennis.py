@@ -92,6 +92,40 @@ def printTournaments():
                 'Year: {}, '.format(t['year'])+
                 'Date: {:>{f_max1}} to {:>{f_max2}}'.format( t['begin_date'], t['end_date'], f_max1 = max_len_date1, f_max2 = max_len_date2))
 
+
+
+def isDoubles(match):
+    if match.get('nA2F') and match.get('nA2L') and match.get('nB2F') and match.get('nB2L'):
+        return True
+    else:
+        return False
+
+def printLiveMatches(verbose = False):
+    for t in Fetcher.getTournaments():
+        print('Tournament \'{}\' (id: {}):'.format(t['name'], t['id']))
+        for m in Fetcher.getLiveMatches(t['id']):
+            is_doubles = isDoubles(m)
+            m = m.attrib
+            if is_doubles:
+                print('\tMatch {} and {} vs {} and {}'.format(
+                    m['mId'],
+                    '{} {}'.format(m[ 'nAF' ], m['nAL']),
+                    '{} {}'.format(m['nA2F'], m['nA2L']),
+                    '{} {}'.format(m['nBF'], m['nBL']),
+                    '{} {}'.format(m['nB2F'], m['nB2L']),
+                    ))
+                if verbose:
+                    print(m)
+            else:
+                print('\tMatch {}: {} vs {}'.format(
+                    m['mId'],
+                    '{} {}'.format(m['nAF'], m['nAL']),
+                    '{} {}'.format(m['nBF'], m['nBL']),
+                    ))
+                if verbose:
+                    print(m)
+
+
 def parseArgs():
     global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter
     parser = argparse.ArgumentParser(description = 'Export Live Tennis Data')
@@ -105,6 +139,8 @@ def parseArgs():
             help='Interval to request live updates', default=10)
     parser.add_argument('-l', '--list-tournaments', action='store_true',
             help='List available tournaments', default=False)
+    parser.add_argument('-m', '--list-matches', action='store_true',
+            help='List live matches', default=False)
 
     args  = parser.parse_args()
     if not args.verbose:
@@ -116,6 +152,10 @@ def parseArgs():
 
     if args.list_tournaments:
         printTournaments()
+        sys.exit(0)
+
+    if args.list_matches:
+        printLiveMatches(args.verbose)
         sys.exit(0)
 
     csvdir = args.csvdir
