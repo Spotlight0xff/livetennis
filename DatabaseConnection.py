@@ -49,6 +49,29 @@ class DatabaseConnection:
             return False
         return num_affected_rows == 1
 
+    def updateRow(self, table_name, select_cond, update_dict):
+        """Update a row (selected based on select_cond) with values from update_dict"""
+        if len(select_cond)<1 or len(update_dict)<1:
+            return None # we need condition and updated values
+        sql = 'UPDATE `{}` SET '.format(table_name)
+        sql += ','.join(['{}=\'{}\''.format(k,v) for k,v in update_dict.items()])
+        sql += ' WHERE '
+        sql += ' AND '.join(['{}=\'{}\''.format(k,v) for k,v in select_cond.items()])
+        logger.trace('updateRow table: {}, sql: {}'.format(table_name, sql))
+        with self.connection.cursor() as cursor:
+            num_affected_rows = 0
+            try:
+                num_affected_rows = cursor.execute(sql)
+                self.connection.commit()
+            except pymysql.Error as e:
+                if logger.getEffectiveLevel() <= logging.DEBUG:
+                    logger.error("updating row failed:\nSQL: {}\nError: {}".format(sql,str(e)))
+                return False
+            # we may have affected 0 rows (because nothing changed, but it still succeeded)
+            return True
+
+
+
     def existsTable(self, table_name):
         """Check if a table exists in the database.
         Use basic caching, invalidate using accessing self.cache_tableexists[table_name]"""
