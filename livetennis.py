@@ -182,7 +182,7 @@ def parseArgs():
                 logger.warn('No whitelist specified, fetching matches from all tournaments')
             else:
                 filter = whitelist.split(',')
-                logger.info("Whitelisted following tournaments:\n{}".format("\n".join(filter)))
+                logger.info("Whitelisted following tournaments: [{}]".format(",".join(filter)))
 
             doubles = int(cfg_filter.get('Doubles', '0'))
             # TODO make this happen
