@@ -27,10 +27,11 @@ db_port = ''
 db_user = ''
 db_password = ''
 db_name = ''
+filter = []
 
 
 def main():
-    global interval, csvdir, db_host, db_port, db_user, db_password, db_name
+    global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter
     logger.info('Starting program')
     live_matches = []
     old_live_matches = []
@@ -38,7 +39,7 @@ def main():
     while True:
         old_live_matches = live_matches
         logger.info('Retrieve list of live matches')
-        tournaments = Fetcher.getTournaments()
+        tournaments = list(Fetcher.getTournaments(filter=filter))
         live_matches = list(Fetcher.getAllLiveMatches(tournaments))
         logger.debug('Found {} live matches'.format(len(live_matches)))
         old_matches_id = [uniq_match for uniq_match, match in old_live_matches]
@@ -69,7 +70,7 @@ def main():
 
 
 def printTournaments():
-    tournaments = list(Fetcher.getTournaments())
+    tournaments = list(Fetcher.getTournaments(filter=None))
     t2 = tournaments
     max_len_id = 0
     max_len_name = 0
@@ -92,7 +93,7 @@ def printTournaments():
                 'Date: {:>{f_max1}} to {:>{f_max2}}'.format( t['begin_date'], t['end_date'], f_max1 = max_len_date1, f_max2 = max_len_date2))
 
 def parseArgs():
-    global interval, csvdir, db_host, db_port, db_user, db_password, db_name
+    global interval, csvdir, db_host, db_port, db_user, db_password, db_name, filter
     parser = argparse.ArgumentParser(description = 'Export Live Tennis Data')
     parser.add_argument('-d', '--csvdir', action='store',
             help='Path to output directory (.csv files)', default='data')
@@ -133,6 +134,26 @@ def parseArgs():
             db_name = db_cfg.get('Name', 'livetennis')
         else:
             logger.error('Specify an section called \'Database\'')
+
+        if 'Filter' in config.sections():
+            cfg_filter = config['Filter']
+            whitelist = cfg_filter.get('Whitelist', '')
+            if not whitelist:
+                logger.warn('No whitelist specified, fetching matches from all tournaments')
+            else:
+                filter = whitelist.split(',')
+                logger.info("Whitelisted following tournaments:\n{}".format("\n".join(filter)))
+
+            doubles = int(cfg_filter.get('Doubles', '0'))
+            # TODO make this happen
+            if doubles:
+                logger.info('Fetch doubles matches also')
+            else:
+                logger.info('Fetch only single matches')
+        else:
+            logger.warn('No filter specified, fetching all matches from all tournaments.')
+
+
     else:
         logger.error('You need to provide an configfile for database connection')
     

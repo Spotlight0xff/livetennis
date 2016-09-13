@@ -56,7 +56,7 @@ def getContent(want, *args):
 
 
 
-def getTournaments(lang = 'en'):
+def getTournaments(filter = None, lang = 'en'):
     """returns listed Tournaments (live or not)"""
     content = getContent('tournaments', 'en')
     logger.trace(content)
@@ -64,9 +64,12 @@ def getTournaments(lang = 'en'):
     for t in tournaments:
         name = t.get('name')
         id = t.get('id')
+        if filter:
+            if not id in filter:
+                continue # not whitelisted
         year = t.get('year')
         gender = t.get('gen') # M or F
-        group = t.get('group') # ??
+        group = t.get('group')
         begin_date = t.get('bDate')
         end_date = t.get('eDate')
         yield {
