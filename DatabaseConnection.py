@@ -8,7 +8,7 @@ class DatabaseConnection:
     success = True # optimism
     cache_tableexists = {}
     def __init__(self, db_host, db_port, db_user, db_password, db_name):
-        logger.debug('Trying to connect to {}@{}:{}/{}'.format(db_user, db_host, db_port, db_name))
+        logger.info('Trying to connect to {}@{}:{}/{}'.format(db_user, db_host, db_port, db_name))
         try:
             self.connection = pymysql.connect(host=db_host,
                                          port=db_port,
@@ -25,7 +25,7 @@ class DatabaseConnection:
             logger.error('Failed to connect to database')
             self.success = False
         else:
-            logger.debug('Connection to database successful')
+            logger.info('Connection to database successful')
             self.success = True
 
     def insertRow(self, table_name, data):
