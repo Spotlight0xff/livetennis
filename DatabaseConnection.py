@@ -17,7 +17,7 @@ class DatabaseConnection:
                                          db=db_name,
                                          charset='utf8mb4',
                                          cursorclass=pymysql.cursors.DictCursor)
-        except pymysql.err.OperationalError as e:
+        except pymysql.err.DatabaseError as e:
             logger.error(e)
             self.suceess = False
 
