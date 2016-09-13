@@ -1,6 +1,8 @@
 ###Installation
-
+* python3 is needed (use pip3 if pip is aliased as python2-pip)
 * `apt-get install libxml2-dev libxslt1-dev python-dev`
+* `git clone git@github.com:Spotlight0xff/livetennis.git`
+* `cd livetennis`
 * `sudo pip install -r requirement.txt`
 
 ###Usage
