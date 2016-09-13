@@ -67,6 +67,30 @@ def main():
         sleep(interval)
 
 
+
+def printTournaments():
+    tournaments = list(Fetcher.getTournaments())
+    t2 = tournaments
+    max_len_id = 0
+    max_len_name = 0
+    max_len_cat = 0
+    max_len_date1 = 0
+    max_len_date2 = 0
+    for t in tournaments:
+        max_len_id = max(max_len_id, len(t['id']))
+        max_len_name = max(max_len_name, len(t['name']))
+        max_len_cat = max(max_len_cat, len(t['group']))
+        max_len_date1 = max(max_len_date1, len(t['begin_date']))
+        max_len_date2 = max(max_len_date2, len(t['end_date']))
+
+    for t in tournaments:
+        print("ID: {0:>{f_max}} ".format(t['id'], f_max = max_len_id) +
+                "Name: {:<{f_max}} ".format(t['name'], f_max=max_len_name) +
+                "Category: {:>{f_max}} ".format(t['group'], f_max=max_len_cat) +
+                'Gender: {}, '.format(t['gender'])+
+                'Year: {}, '.format(t['year'])+
+                'Date: {:>{f_max1}} to {:>{f_max2}}'.format( t['begin_date'], t['end_date'], f_max1 = max_len_date1, f_max2 = max_len_date2))
+
 def parseArgs():
     global interval, csvdir, db_host, db_port, db_user, db_password, db_name
     parser = argparse.ArgumentParser(description = 'Export Live Tennis Data')
@@ -78,6 +102,8 @@ def parseArgs():
             help='Increase output verbosity (up to -vv)')
     parser.add_argument('-i', '--interval', action='store',
             help='Interval to request live updates', default=10)
+    parser.add_argument('-l', '--list-tournaments', action='store_true',
+            help='List available tournaments', default=False)
 
     args  = parser.parse_args()
     if not args.verbose:
@@ -86,6 +112,10 @@ def parseArgs():
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(5) # TRACE
+
+    if args.list_tournaments:
+        printTournaments()
+        sys.exit(0)
 
     csvdir = args.csvdir
     interval = args.interval
