@@ -45,13 +45,13 @@ def getContent(want, *args):
     r = requests.get(url)
 
     if req[0] is ContentType.obfuscated:
-        logger.debug('request obfuscated URL \'{}\''.format(url) )
+        logger.trace('request obfuscated URL \'{}\''.format(url) )
         return Crypt.decrypt_apk(r.content)
     elif req[0] is ContentType.encrypted:
-        logger.debug('request encrypted URL \'{}\''.format(url) )
+        logger.trace('request encrypted URL \'{}\''.format(url) )
         return Crypt.decrypt_flash(r.content)
     else:
-        logger.debug('request plain URL \'{}\''.format(url) )
+        logger.trace('request plain URL \'{}\''.format(url) )
         return r.content
 
 
