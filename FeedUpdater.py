@@ -18,6 +18,13 @@ def getMatchSet(match):
         set = 1
     return set
 
+
+def isDoubles(match):
+    if match.get('nA2F') and match.get('nA2L') and match.get('nB2F') and match.get('nB2L'):
+        return True
+    else:
+        return False
+
 def getMatchRecord(uniq_match, match, tournaments, initial):
     unique_name = uniq_match.getName()
     t_name = ''
@@ -37,7 +44,7 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     record['t_name'] = t_name
     record['t_category'] = t_cat
     record['status'] = match.get('state')
-    record['is_doubles'] = '0'
+    record['is_doubles'] = '1' if FeedUpdater.isDoubles(match) else '0'
     record['is_quals'] = match.get('isQuals')
     record['num_sets'] = match.get('numSets')
     record['player1'] = '{} {}'.format(match.get('nAF'), match.get('nAL'))
@@ -45,7 +52,10 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     record['round'] = match.get('rnd')
     record['winner'] = match.get('winner')
     record['score'] = ''.join([match.get(s) for s in ['s{}{}'.format(num,side) for side in ['A','B'] for num in range(1,6)]])
-    record['first_server'] =  '' # TODO
+    # this one is tricky:
+    # we get this correct only if this method gets called directly at the first start
+    if initial:
+        record['first_server'] =  match.get('serve')# TODO
     record['start_ts'] = match.get('ts')
     record['matchtime'] = match.get('mt')
     record['retirement'] = '' # TODO

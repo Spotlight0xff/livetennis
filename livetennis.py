@@ -19,6 +19,7 @@ import Utils
 import Fetcher
 import Crypt
 import LiveObserver
+import FeedUpdater
 
 
 interval = 10
@@ -45,7 +46,7 @@ def main():
 
         # Filter based on preference
         if only_singles:
-            live_matches = [m for m in live_matches if not isDoubles(m)]
+            live_matches = [m for m in live_matches if not FeedUpdater.isDoubles(m[1])]
 
         logger.debug('Found {} live matches'.format(len(live_matches)))
         old_matches_id = [uniq_match for uniq_match, match in old_live_matches]
@@ -54,13 +55,12 @@ def main():
         # print('Live Matches: {}'.format(','.join(live_matches)))
 
         # iterate through now-completed matches
-        # completed = set(old_matches_id) - set(matches_id)
-        completed = [x for x in old_matches_id if x not in matches_id] #set(matches_id) - set(old_matches_id)
+        completed = [x for x in old_matches_id if x not in matches_id]
         for uniq_match in completed:
             observer.completed(uniq_match, old_live_matches, tournaments) # id
 
         # iterate through matches which went live just now
-        new_live = [x for x in matches_id if x not in old_matches_id] #set(matches_id) - set(old_matches_id)
+        new_live = [x for x in matches_id if x not in old_matches_id]
         if len(new_live):
             logger.info('{} match{} just went live.'.format(len(new_live), 'es' if len(new_live)>1 else ''))
         for uniq_match in new_live:
@@ -100,17 +100,11 @@ def printTournaments():
 
 
 
-def isDoubles(match):
-    if match.get('nA2F') and match.get('nA2L') and match.get('nB2F') and match.get('nB2L'):
-        return True
-    else:
-        return False
-
 def printLiveMatches(verbose = False):
     for t in Fetcher.getTournaments():
         print('Tournament \'{}\' (id: {}):'.format(t['name'], t['id']))
         for m in Fetcher.getLiveMatches(t['id']):
-            is_doubles = isDoubles(m)
+            is_doubles = FeedUpdater.isDoubles(m)
             m = m.attrib
             if is_doubles:
                 print('\tMatch {} and {} vs {} and {}'.format(
