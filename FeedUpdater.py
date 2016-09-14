@@ -19,6 +19,17 @@ def getMatchSet(match):
     return set
 
 
+def getRetirement(match):
+    msg = match.get('msg')
+    print(msg)
+    #msg will look like this:
+    # {11|player1} {20}
+    # this means, that player 1 won (id 11) by retirement (20)
+    # used IDs: see decompiled apk: Constants.java: matchMessages
+    if '{20}' in msg:
+        return True
+    return False
+
 def isDoubles(match):
     if match.get('nA2F') and match.get('nA2L') and match.get('nB2F') and match.get('nB2L'):
         return True
@@ -55,10 +66,10 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     # this one is tricky:
     # we get this correct only if this method gets called directly at the first start
     if initial:
-        record['first_server'] =  match.get('serve')# TODO
+        record['first_server'] =  match.get('serve')
     record['start_ts'] = match.get('ts')
     record['matchtime'] = match.get('mt')
-    record['retirement'] = '' # TODO
+    record['retirement'] = '1' if getRetirement(match) else '0'
     return record
 
 def getMatchRow(match, counter):
