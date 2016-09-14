@@ -29,6 +29,7 @@ URLS = {
         'livematches_tournament': (ContentType.obfuscated, host + '/M/Short/GetLiveMatchesPerTournament.aspx?year={}&id={}', 2),
         'livematches': (ContentType.encrypted, host + '/F/Short/GetLiveMatchesCrypt.aspx?y={}&wkno={}&e={}', 3), 
         'matchstats': (ContentType.obfuscated, host + '/M/Short/GetMatchStats.aspx?year={}&id={}&mId={}', 3),
+        'allmatchstats': (ContentType.obfuscated, host + '/M/Short/GetMatchStats.aspx?year={}&id={}', 2),
         'matchstats_crypt': (ContentType.encrypted, host + '/M/Short/GetMatchStats_VCrypt.aspx?year={}&id={}&mId={}', 3),
         }
 
@@ -93,14 +94,6 @@ def getLiveMatches(t_id):
         match_id = match.get("mId")
         logger.debug('Found Live Match: ' + match_id)
         yield match
-
-def getMatchStats(t_id, m_id):
-    content = getContent('matchstats', YEAR, t_id, m_id)
-    logger.trace(content)
-    root = etree.XML(content.encode('utf-8'))
-    match = root.find('Tournament').find('Match')
-    model = MatchModel.MatchModel()
-    model.fromCsv(match.get('csv'))
 
 def getAllLiveMatches(tournaments):
     # iterate through all tournaments
