@@ -129,7 +129,8 @@ class LiveObserver:
         unique_name = uniq_match.getName()
 
         # update match record (final update)
-        match_record = FeedUpdater.getMatchRecord(uniq_match, matches, tournaments, False)
+        match = self.crossRefMatch(uniq_match, matches)
+        match_record = FeedUpdater.getMatchRecord(uniq_match, match, tournaments, False)
         select_cond = {
                         'year': uniq_match.getYear(),
                         'match_id': uniq_match.getMatch(),
