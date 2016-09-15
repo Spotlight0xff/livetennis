@@ -199,5 +199,13 @@ def parseArgs():
 
 if __name__ == '__main__':
     parseArgs()
-    main()
+    for i in range(1,20):
+        # try:
+        main()
+        # except Exception as e:
+            # logger.critical("Error occured: " + str(e))
+            # logger.info("Restarting application ({} attempt)".format(i))
+            # continue
+        # else:
+            # break
 
