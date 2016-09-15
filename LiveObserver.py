@@ -152,7 +152,7 @@ class LiveObserver:
                 return
             else:
                 logger.debug('Match {} did change!'.format(unique_name))
-                if unique_name in self.old_match:
+                # if unique_name in self.old_match:
                     # logger.warn("ptA:{} -> ptA:{}".format(self.old_match[unique_name].get('ptA'), match.get('ptA')))
                     # logger.warn("ptB:{} -> ptB:{}".format(self.old_match[unique_name].get('ptA'), match.get('ptB')))
                     # winner = FeedUpdater.calculateWinner(self.old_match[unique_name], match)
