@@ -159,7 +159,7 @@ def parseArgs():
         sys.exit(0)
 
     csvdir = args.csvdir
-    interval = args.interval
+    interval = int(args.interval)
 
     logger.debug('Trying to read configfile \'{}\''.format(args.config))
     if os.path.isfile(args.config):
