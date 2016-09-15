@@ -29,6 +29,42 @@ def getRetirement(match):
         return True
     return False
 
+def calculateWinner(old_match, match):
+    if match.get('ptA') == 'A': # player a has advantage
+        return 'A'
+    if match.get('ptB') == 'A': # player b has advantage
+        return 'B'
+
+    # player A: 40 -> 40
+    # player B: A -> 40
+    if old_match.get('ptA') == '40' and match.get('ptA') == '40' and old_match.get('ptB') == 'A' and match.get('ptB') == '40':
+        return 'A'
+
+    # player A: A -> 40
+    # player B: 40 -> 40
+    if old_match.get('ptA') == 'A' and match.get('ptA') == '40' and old_match.get('ptB') == '40' and match.get('ptB') == '40':
+        return 'B'
+
+    if match.get('ptA') == '' or match.get('ptB') == '':
+        return '0'
+
+    old_ptA = int(old_match.get('ptA'))
+    old_ptB = int(old_match.get('ptB'))
+    new_ptA = int(match.get('ptA'))
+    new_ptB = int(match.get('ptB'))
+    if new_ptA > old_ptA:
+        return 'A'
+
+    if new_ptB > old_ptB:
+        return 'B'
+
+    if new_ptA == 0 and new_ptB == 0:
+        return '0'
+
+    # should not happen
+    logger.warn('Both scores increased??: A: {} -> {}, B: {} -> {}'.format(old_match.get('ptA'), match.get('ptA'), old_match.get('ptB'), match.get('ptB')))
+    return '?'
+
 def isDoubles(match):
     if match.get('nA2F') and match.get('nA2L') and match.get('nB2F') and match.get('nB2L'):
         return True
@@ -71,12 +107,12 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     record['retirement'] = '1' if getRetirement(match) else '0'
     return record
 
-def getMatchRow(match, counter):
+def getMatchRow(match, old_match, counter):
     set = getMatchSet(match)
     return (
             counter,
             match.get('serve'),
-            match.get('winner'),
+            calculateWinner(match, old_match) if old_match is not None else '',
             match.get('ptA')+match.get('ptB'),
             set,
             match.get('s{}A'.format(set)) + match.get('s{}B'.format(set)),

@@ -16,6 +16,7 @@ class LiveObserver:
     """
     map_writer = {}
     last_update = {}
+    old_match = {}
     counter = {}
     csvdir = 'data'
 
@@ -89,7 +90,8 @@ class LiveObserver:
                 writer.writerow(FeedUpdater.getMatchHeader())
             # TODO  read counter from csv-file and use it
             self.counter[unique_name] += 1
-            writer.writerow(FeedUpdater.getMatchRow(match, self.counter[unique_name]))
+            old_match = self.old_match[unique_name] if unique_name in self.old_match else None
+            writer.writerow(FeedUpdater.getMatchRow(match, old_match, self.counter[unique_name]))
 
 
     def update_db(self, uniq_match, match):
@@ -98,9 +100,11 @@ class LiveObserver:
             return # no db support (failed to connect probably)
 
         unique_name = uniq_match.getName()
+        old_match = self.old_match[unique_name] if unique_name in self.old_match else None
+
         logger.debug('Write updates to database for \'{}\''.format(unique_name))
         if self.db_conn.existsTable(unique_name):
-            result = self.db_conn.insertRow(unique_name, FeedUpdater.getMatchRow(match, 0))
+            result = self.db_conn.insertRow(unique_name, FeedUpdater.getMatchRow(match, old_match, 0))
             if not result or result < 1:
                 logger.error('Failed to insert data into table {}'.format(unique_name))
                 return
@@ -112,7 +116,7 @@ class LiveObserver:
                 logger.error('Could not create new table for \'{}\''.format(unique_name))
                 return # handle this case!
             else:
-                result_ins = self.db_conn.insertRow(unique_name, FeedUpdater.getMatchRow(match, 0))
+                result_ins = self.db_conn.insertRow(unique_name, FeedUpdater.getMatchRow(match, old_match, 0))
                 if not result_ins or result_ins < 1:
                     logger.error('Failed to insert data into new table {}'.format(unique_name))
                     return
@@ -141,14 +145,23 @@ class LiveObserver:
 
     def update(self, uniq_match, match):
         unique_name = uniq_match.getName()
-        row = FeedUpdater.getMatchRow(match,0)
         if unique_name in self.last_update:
             if row[:-1] == self.last_update[unique_name][:-1]:
                 logger.debug('Match {} did not change!'.format(unique_name))
                 return
             else:
                 logger.debug('Match {} did change!'.format(unique_name))
+                if unique_name in self.old_match:
+                    # logger.warn("ptA:{} -> ptA:{}".format(self.old_match[unique_name].get('ptA'), match.get('ptA')))
+                    # logger.warn("ptB:{} -> ptB:{}".format(self.old_match[unique_name].get('ptA'), match.get('ptB')))
+                    # winner = FeedUpdater.calculateWinner(self.old_match[unique_name], match)
+
+        old_match = self.old_match[unique_name] if unique_name in self.old_match else None
+        row = FeedUpdater.getMatchRow(match, old_match, 0)
+
+
         self.last_update[unique_name] = row
+        self.old_match[unique_name] = match
         funcs = self.map_writer[unique_name]
         for func in funcs:
             func(uniq_match, match)
