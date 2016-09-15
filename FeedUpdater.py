@@ -93,6 +93,8 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     record['is_doubles'] = '1' if isDoubles(match) else '0'
     record['is_quals'] = match.get('isQuals')
     record['num_sets'] = match.get('numSets')
+    record['id1'] = match.get('idA')
+    record['id2'] = match.get('idB')
     record['player1'] = '{} {}'.format(match.get('nAF'), match.get('nAL'))
     record['player2'] = '{} {}'.format(match.get('nBF'), match.get('nBL'))
     record['round'] = match.get('rnd')
