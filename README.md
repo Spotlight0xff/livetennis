@@ -1,15 +1,20 @@
-###Installation
+Installation
+---
+
 * python3 is needed (use pip3 if pip is aliased as python2-pip)
 * `apt-get install libxml2-dev libxslt1-dev python-dev`
 * `git clone git@github.com:Spotlight0xff/livetennis.git`
 * `cd livetennis`
 * `sudo pip install -r requirement.txt`
 
-###Usage
+Usage
+---
 `./livetennis.py -h`
 
-###Sample configuration file
-```[Database]
+Sample configuration file
+---
+```ini
+[Database]
 ; IP of mysql instance
 Host=192.168.0.200
 
@@ -30,13 +35,16 @@ Name=test_ptl
 Whitelist=0448,0656
 
 ; set to 1, if you want double matches as well
-Doubles=0```
-
-
-###Database configuration
+Doubles=0
 ```
+
+
+Database configuration
+---
+
+```sql
 CREATE TABLE `matches` (
-  `id` int(11) NOT NULL PRIMARY\_KEY AUTO\_INCREMENT NOT NULL,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `year` year(4) NOT NULL,
   `tournament_id` varchar(20) NOT NULL,
   `match_id` varchar(20) NOT NULL,
