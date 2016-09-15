@@ -21,8 +21,7 @@ def getMatchSet(match):
 
 def getRetirement(match):
     msg = match.get('msg')
-    print(msg)
-    #msg will look like this:
+    # msg will look like this:
     # {11|player1} {20}
     # this means, that player 1 won (id 11) by retirement (20)
     # used IDs: see decompiled apk: Constants.java: matchMessages
@@ -55,7 +54,7 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     record['t_name'] = t_name
     record['t_category'] = t_cat
     record['status'] = match.get('state')
-    record['is_doubles'] = '1' if FeedUpdater.isDoubles(match) else '0'
+    record['is_doubles'] = '1' if isDoubles(match) else '0'
     record['is_quals'] = match.get('isQuals')
     record['num_sets'] = match.get('numSets')
     record['player1'] = '{} {}'.format(match.get('nAF'), match.get('nAL'))
