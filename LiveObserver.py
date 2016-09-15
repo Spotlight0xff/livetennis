@@ -146,6 +146,8 @@ class LiveObserver:
 
     def update(self, uniq_match, match):
         unique_name = uniq_match.getName()
+        # We don't need the winner calculated
+        row = FeedUpdater.getMatchRow(match, None, 0)
         if unique_name in self.last_update:
             if row[:-1] == self.last_update[unique_name][:-1]:
                 logger.debug('Match {} did not change!'.format(unique_name))
@@ -157,13 +159,10 @@ class LiveObserver:
                     # logger.warn("ptB:{} -> ptB:{}".format(self.old_match[unique_name].get('ptA'), match.get('ptB')))
                     # winner = FeedUpdater.calculateWinner(self.old_match[unique_name], match)
 
-        old_match = self.old_match[unique_name] if unique_name in self.old_match else None
-        row = FeedUpdater.getMatchRow(match, old_match, 0)
-
 
         self.last_update[unique_name] = row
-        self.old_match[unique_name] = match
         funcs = self.map_writer[unique_name]
         for func in funcs:
             func(uniq_match, match)
+        self.old_match[unique_name] = match
         logger.info('Match {} got updated.'.format(match.get('mId')))

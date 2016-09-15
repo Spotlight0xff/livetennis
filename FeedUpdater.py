@@ -58,11 +58,21 @@ def calculateWinner(old_match, match):
     if new_ptB > old_ptB:
         return 'B'
 
+    if old_ptA == 40 and new_ptA == 0:
+        return 'A'
+
+    if old_ptB == 40 and new_ptA == 0:
+        return 'B'
+
+
     if new_ptA == 0 and new_ptB == 0:
         return '0'
 
+
+    if old_ptA == new_ptA and old_ptB == new_ptB:
+        return '0'
+
     # should not happen
-    logger.warn('Both scores increased??: A: {} -> {}, B: {} -> {}'.format(old_match.get('ptA'), match.get('ptA'), old_match.get('ptB'), match.get('ptB')))
     return '?'
 
 def isDoubles(match):
@@ -114,7 +124,7 @@ def getMatchRow(match, old_match, counter):
     return (
             counter,
             match.get('serve'),
-            calculateWinner(match, old_match) if old_match is not None else '',
+            calculateWinner(old_match, match) if old_match is not None else '',
             match.get('ptA')+match.get('ptB'),
             set,
             match.get('s{}A'.format(set)) + match.get('s{}B'.format(set)),
