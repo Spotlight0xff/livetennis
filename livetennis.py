@@ -107,7 +107,7 @@ def printLiveMatches(verbose = False):
             is_doubles = FeedUpdater.isDoubles(m)
             m = m.attrib
             if is_doubles:
-                print('\tMatch {} and {} vs {} and {}'.format(
+                print('\tMatch {}: {} and {} vs {} and {}'.format(
                     m['mId'],
                     '{} {}'.format(m[ 'nAF' ], m['nAL']),
                     '{} {}'.format(m['nA2F'], m['nA2L']),
