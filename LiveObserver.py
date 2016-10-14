@@ -138,7 +138,7 @@ class LiveObserver:
                       }
         result = self.db_conn.updateRow('matches', select_cond, match_record)
         if not result:
-            logger.error('Error updating final match record for {}'.format(uniq_name))
+            logger.error('Error updating final match record for {}'.format(uniq_match.getName()))
 
         logger.info('{} got completed.'.format(unique_name))
         del self.counter[unique_name]
