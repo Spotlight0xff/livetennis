@@ -43,9 +43,7 @@ class DatabaseConnection:
             num_affected_rows = cursor.execute(sql, data)
             self.connection.commit()
         except pymysql.Error as e:
-            # show exact error iff debug level is set
-            if logger.getEffectiveLevel() <= logging.DEBUG:
-                logger.error('inserting into db failed: '.format(table_name) + str(e))
+            logger.exception(e)
             return False
         return num_affected_rows == 1
 
