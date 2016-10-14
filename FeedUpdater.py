@@ -48,10 +48,20 @@ def calculateWinner(old_match, match):
     if match.get('ptA') == '' or match.get('ptB') == '':
         return '0'
 
-    old_ptA = int(old_match.get('ptA'))
-    old_ptB = int(old_match.get('ptB'))
-    new_ptA = int(match.get('ptA'))
-    new_ptB = int(match.get('ptB'))
+    try:
+        old_ptA = int(old_match.get('ptA'))
+        old_ptB = int(old_match.get('ptB'))
+        new_ptA = int(match.get('ptA'))
+        new_ptB = int(match.get('ptB'))
+    except ValueError as e:
+        logger.exception('converting to int')
+        logger.debug('old_match')
+        logger.debug(old_match.attrib)
+
+        logger.debug('match')
+        logger.debug(match.attrib)
+        return '?'
+
     if new_ptA > old_ptA:
         return 'A'
 
