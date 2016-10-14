@@ -48,6 +48,16 @@ def calculateWinner(old_match, match):
     if match.get('ptA') == '' or match.get('ptB') == '':
         return '0'
 
+    # player A: A  -> 0
+    # player B: 40 -> 0
+    if old_match.get('ptA') == 'A' and match.get('ptA') == '0' and old_match.get('ptB') == '40' and match.get('ptB') == '0':
+        return 'A'
+
+    # player A: 40 -> 0
+    # player B: A  -> 0
+    if old_match.get('ptA') == '40' and match.get('ptA') == '0' and old_match.get('ptB') == 'A' and match.get('ptB') == '0':
+        return 'B'
+
     try:
         old_ptA = int(old_match.get('ptA'))
         old_ptB = int(old_match.get('ptB'))
