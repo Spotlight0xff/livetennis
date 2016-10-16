@@ -51,6 +51,7 @@ CREATE TABLE `matches` (
   `table_name` varchar(255) NOT NULL,
   `t_name` varchar(50) NOT NULL,
   `t_category` varchar(5) NOT NULL,
+  `t_gender` varchar(1) NOT NULL,
   `status` varchar(10) NOT NULL,
   `is_doubles` int(11) NOT NULL,
   `is_quals` tinyint(1) NOT NULL,

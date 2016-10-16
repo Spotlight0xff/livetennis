@@ -105,10 +105,12 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     unique_name = uniq_match.getName()
     t_name = ''
     t_cat = ''
+    t_gender = ''
     for t in tournaments:
         if t.get('year') == uniq_match.getYear() and t.get('id') == uniq_match.getTournament():
             t_name = t.get('name')
             t_cat = t.get('group')
+            t_gender = t.get('gender')
             break
     record = OrderedDict()
     if initial:
@@ -119,6 +121,7 @@ def getMatchRecord(uniq_match, match, tournaments, initial):
     record['table_name'] = unique_name
     record['t_name'] = t_name
     record['t_category'] = t_cat
+    record['t_gender'] = t_gender
     record['status'] = match.get('state')
     record['is_doubles'] = '1' if isDoubles(match) else '0'
     record['is_quals'] = match.get('isQuals')
